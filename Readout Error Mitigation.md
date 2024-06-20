@@ -19,14 +19,6 @@ The same idea can be applied to any 𝑛-qubit confusion matrix 𝐴 which i
 - In practice the noise characteristics of devices tend to drift, which necessitates a recalibration effort that results in an updated confusion matrix.
 - After applying the pseudoinverse matrix $A^{\textdagger}$ to our empirical probability distribution to obtain an adjusted _quasi_-probability distribution, $p'=A^{\textdagger}p$, which could possibly be non-positive. As such, we want to find the closest _positive_ probability distribution to our empirical probability distribution. So there could be a further step which consists in finding this positive distribution if $p'$ was negative.
 
-**Advantages:** 
-- Deals with errors that many other techniques do not handle 
-- Can often be combined with existing workflows to produce better results
-- Can also accept as much information as the user has about the measurement statistics
-**Disadvantages:**
-- Requires the preliminary characterization of the measurement errors associated to a specific backend 
-- Confusion matrix and its estimation involves numerous state preparations and measurements in the computational basis. Its complete characterization scales exponentially in the number of qubits (can be simplified under the assumption that measurement errors are local with respect to individual qubits or group of qubits)
-
 **Other Methods:**
 Although the tensor product noise model is appealingly simple, it leaves aside cross-talk errors encountered in real-world setups. Cross-talk during readout can arise from the underlying qubit-qubit coupling, and spectral overlap of readout resonators with stray couplings or multiplexing. We can introduce a correlated noise model based on Continuous Time Markov Processes (CTMP). The corresponding noise matrix has the form $A=e^G$, where $G$ is a sum of local operators generating single and two-qubit readout errors such as $01 \rightarrow 10,11 \rightarrow 00$, etc. The model depends on $2 n^2$ error rates.
 Define a CTMP noise model as a stochastic matrix A of size $2^n \times 2^n$ such that
@@ -44,6 +36,18 @@ where $e^G=\sum_{p=0}^{\infty} G^p / p$ ! is the matrix exponential, $r_i \geq$ 
 | $\|00\rangle\langle 11\|-\| 11\rangle\langle 11\|$ | $11 \rightarrow 00$ |     $n(n-1) / 2$     |
 
 Each operator $G_i$ generates a readout error on some bit or some pair of bits. The right column shows the number of ways to choose qubit(s) acted upon by a generator. The negative terms in $G_i$ ensure that $A$ is a stochastic matrix. The CTMP model depends on $2 n^2$ parameters $r_i$, as can be seen by counting the number of generators $G_i$ of each type. Furthermore, the tensor product model Eq. (5) is a special case of CTMP with $r_i=0$ for all two-qubit errors. This method yields better results compared to the simple confusion matrix approach.
+
+## Advantages
+
+- Deals with errors that many other techniques do not handle 
+- Can often be combined with existing workflows to produce better results
+- Can also accept as much information as the user has about the measurement statistics
+
+## Disadvantages
+
+- Requires the preliminary characterization of the measurement errors associated to a specific backend 
+- Confusion matrix and its estimation involves numerous state preparations and measurements in the computational basis. Its complete characterization scales exponentially in the number of qubits (can be simplified under the assumption that measurement errors are local with respect to individual qubits or group of qubits)
+
 
 ### References
 - [Confusion Matrix Theory](https://arxiv.org/abs/1907.08518)

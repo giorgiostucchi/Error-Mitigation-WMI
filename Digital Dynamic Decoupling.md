@@ -2,8 +2,6 @@ Digital Dynamical Decoupling (DDD) is an error mitigation technique in which seq
 
 Dynamical decoupling is a technique that has been originally devised to shield a quantum system from quantum noise coming from an environment, using open-loop control techniques. The crucial idea behind dynamical decoupling is to intervene with control pulses on timescales that are faster than those of the system-environment interaction.
 
-[What is the theory behind DDD?](https://mitiq.readthedocs.io/en/latest/guide/ddd-5-theory.html#digital-dynamical-decoupling)
-
 The application of DD sequences can have two effects depending on the correlation time of the environment:
 
 1. For Markovian noise, DD can make the overall quantum channel more symmetric (analogous to quantum twirling) but cannot actually decouple the system from the environment;
@@ -16,7 +14,6 @@ In the context of quantum computing, DD can be considered as an error mitigation
 - It maps a noisy quantum computation to a _single_ error-mitigated computation (no need to take linear combinations of noisy results as in [ZNE](https://mitiq.readthedocs.io/en/latest/guide/zne-5-theory.html), [PEC](https://mitiq.readthedocs.io/en/latest/guide/pec-5-theory.html), and [CDR](https://mitiq.readthedocs.io/en/latest/guide/cdr-5-theory.html)).
 - As a consequence of the previous point, there is not a fundamental error mitigation overhead or increase in statistical uncertainty in the final result.
 - If noise is time-correlated, it can suppress real errors at the physical level instead of applying a virtual noise reduction via classical post-processing.
-
 
 In a quantum computing device based on the circuit model, sequences of DD pulses can be mapped to sequences of discrete quantum gates (typically Pauli gates). We refer to this gate-level formulation as _digital dynamical decoupling_ (DDD) to distinguish it from the standard pulse-level formulation.
 
@@ -38,22 +35,25 @@ DDD involves the generation and the execution of a _single_ modified circuit. 
 
 The grid structure of a circuit can be expressed as a _mask matrix_ with 1 entries in cells that are occupied by gates and 0 entries in empty cells. A slack window is an horizontal and contiguous sequence of zeros in the mask matrix, corresponding to a qubit which is idling for a finite amount of time. To analyze the structure of idle windows, it is more convenient to define a _slack matrix_, i.e., a matrix of positive integers that are placed at the beginning of each slack window and whose value represent the time length of that window. The DDD error mitigation technique consists of filling the slack windows of a circuit with DDD gate sequences.
 
-### Advantages:
+## Advantages:
+
 - Particularly effective against structured baths, colored noise or any type of noise with some level of memory effects.
 - Effective for single-shot quantum computing algorithms, i.e., it finds application beyond algorithms that just require expectation values, like variational quantum algorithms.
 
-### Disadvantages:
+## Disadvantages:
+
 - Dynamical decoupling is generally applied at the pulse level. Mitiq provides it at the gate-level. For this reason, it may be difficult to know and control what decoupling sequences are actually run on the quantum processor.
 - Cannot improve results against completely symmetric noise effects (symmetrical with respect to gates applied in the decoupling sequence). In particular, digital dynamical decoupling is ineffective against depolarizing Markovian noise.
 
 **Notes**: 
--  "Slack window with a length of 4" means that 4 single-qubit gates can fit in that window
+-  "Slack window with a length of 4" means that 4 single-qubit gates can fit in that window.
 - DDD is designed to mitigate noise that has a finite correlation time. For Markovian noise, DDD can still have a non-trivial effect on the final error, but it is not always a positive effect.
-- DDD gate sequences are inserted in idle windows
+- DDD gate sequences are inserted in idle windows.
 
 **Open Questions**:
 - [ ] 
 
-### Paper References (to read):
+### References
 - https://arxiv.org/abs/quant-ph/9803057
 - https://arxiv.org/abs/2011.01157
+- [What is the theory behind DDD?](https://mitiq.readthedocs.io/en/latest/guide/ddd-5-theory.html#digital-dynamical-decoupling)

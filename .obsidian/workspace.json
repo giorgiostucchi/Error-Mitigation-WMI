@@ -8,18 +8,43 @@
         "type": "tabs",
         "children": [
           {
-            "id": "8fb8e5e8d543c67d",
+            "id": "aeb7049b08f8e1ea",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Error Mitigation Techniques.md",
+                "mode": "preview",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "41a1714e806ada57",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Clifford Data Regression.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "009b4d09d0cc1e6c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Digital Dynamic Decoupling.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -85,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Error Mitigation Techniques.md",
+                "file": "Digital Dynamic Decoupling.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Error Mitigation Techniques.md",
+                "file": "Digital Dynamic Decoupling.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Error Mitigation Techniques.md"
+                "file": "Digital Dynamic Decoupling.md"
               }
             }
           }
@@ -146,21 +171,25 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "8fb8e5e8d543c67d",
+  "active": "009b4d09d0cc1e6c",
   "lastOpenFiles": [
-    "repo",
-    "Clifford Data Regression.md",
-    "Error Mitigation Techniques.md",
-    "Zero Noise Extrapolation.md",
-    "repository",
+    "TO DOs.md",
     "Digital Dynamic Decoupling.md",
     "Readout Error Mitigation.md",
+    "Clifford Data Regression.md",
+    "Error Mitigation Techniques.md",
+    "[2003.04941.md",
+    "Probabilistic Error Transformation.md",
+    "Zero Noise Extrapolation.md",
     "Pasted image 20240610115227.png",
+    "Martin's paper.md",
+    "Cover Letter.md",
+    "repo",
+    "repository",
     "Pasted image 20240610084750.png",
     "Pasted image 20240610084827.png",
     "Pasted image 20240610084553.png",
     "Error Mitigation Qiskit.md",
-    "Probabilistic Error Transformation.md",
     "Clifford Data Regression",
     "Error Mit"
   ]

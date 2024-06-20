@@ -1,7 +1,5 @@
 Clifford data regression (CDR) is a learning-based quantum error mitigation technique in which an error mitigation model is trained with quantum circuits that _resemble_ the circuit of interest, but which are easier to classically simulate.
 
-[What is the theory behind CDR? — Mitiq 0.37.0 documentation](https://mitiq.readthedocs.io/en/latest/guide/cdr-5-theory.html)
-
 This error mitigation strategy is designed for application at the gate level and is relatively straightforward to apply on gate-based quantum computers. CDR primarily consists of creating a training data set $\{(X_{\phi_i}^{\text{error}}, X_{\phi_i}^{\text{exact}})\}$, where $X_{\phi_i}^{\text{error}}$ and   $X_{\phi_i}^{\text{exact}}$ are the expectation values of an observable 𝑋 for a state $|\phi_i\rangle$ under error and error-free conditions, respectively.
 
 This method includes the following steps:
@@ -53,5 +51,7 @@ Another relevant aspect to consider is that, to apply CDR in a scalable way, a v
 **Open Questions**:
  - [ ]  Check definition of Clifford Gates
 
-### Paper References (to read):
-- 
+### References
+- [What is the theory behind CDR? ](https://mitiq.readthedocs.io/en/latest/guide/cdr-5-theory.html)
+-  [Error mitigation with Clifford quantum-circuit data](https://quantum-journal.org/papers/q-2021-11-26-592/pdf/) (yet to read)
+-  [Unified approach to data-driven quantum error mitigation](https://journals.aps.org/prresearch/pdf/10.1103/PhysRevResearch.3.033098) (yet to read)

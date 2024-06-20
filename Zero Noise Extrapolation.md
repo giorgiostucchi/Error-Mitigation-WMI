@@ -1,6 +1,6 @@
-Zero-noise extrapolation (ZNE) is an error mitigation technique in which an expectation value is computed at different noise levels and, as a second step, the ideal expectation value is inferred by extrapolating the measured results to the zero-noise limit.
+Zero-noise extrapolation (ZNE) is an error mitigation technique in which an expectation value is computed at different noise levels and, as a second step, the ideal (i.e. *noiseless*) expectation value is inferred by extrapolating the measured results to the zero-noise limit.
 
-Zero noise extrapolation (ZNE) is an error mitigation technique used to extrapolate the noiseless expectation value of an observable from a range of expectation values computed at different noise levels. This process works in two steps:
+The two steps are:
 
 - **Step 1: Intentionally scale noise**. This can be done with different methods. _Pulse-stretching_ can be used to increase the noise level of a quantum computation. Similar results can be obtained, at a gate-level, with _unitary folding_ or _identity insertion scaling_.
 - **Step 2: Extrapolate to the noiseless limit**. This can be done by fitting a curve (often called _extrapolation model_) to the expectation values measured at different noise levels to extrapolate the noiseless expectation value.
@@ -19,7 +19,7 @@ In _identity insertion scaling_, we perform a mapping 𝐺↦𝐼𝐺. This ma
 
 Additional details on the theory of identity insertion scaling are similar to those in unitary folding. The only difference is that instead of scaling gate noise, the insertion of an identity gate increases the wait time after each circuit layer is executed. This allows the qubits to interact with the environment through some noisy process and decohere if the system-environment interaction is strong. The decoherence time for the qubits in a quantum system is determined by the amount of time our system of interest remains coherent and uncouples from the external environment.
 
-A noise scaling technique similar to unitary folding is _pulse-stretching_: a method that only applies to devices with pulse-level access. The noise of the device can be altered by increasing the time over which pulses are implemented
+A noise scaling technique similar to unitary folding is _pulse-stretching_: a method that only applies to devices with pulse-level access. The noise of the device can be altered by increasing the time over which pulses are implemented.
 
 ## Step 2: Extrapolate to the noiseless limit
 
@@ -42,17 +42,14 @@ $$f(\lambda; p_1, p_2, ... p_m) = p_1 + p_2 \lambda + p_3 \lambda^2 + \dots p_m 
 
 where 𝑚 is equal to the number of data points in the fit (i.e. the number of noise scaled expectation values).
 
-One can select a noise scaling method via _noise scaling functions_. A noise scaling function takes a circuit and a real scale factor as two inputs and returns a new circuit. The returned circuit is equivalent to the input one (if executed on a noiseless backend), but is more sensitive to noise when executed on a real noisy backend. In practice, by applying a noise scaling function before the execution of a circuit, one can indirectly scale up the effect of noise. The noise scaling function can either increase the total circuit execution time by inserting unitaries or increase the wait times in the middle of a circuit execution. These two methods are _unitary folding_ and _identity scaling_ respectively.
+One can select a noise scaling method via _noise scaling functions_. A noise scaling function takes a circuit and a real scale factor as two inputs and returns a new circuit. The returned circuit is equivalent to the input one (if executed on a noiseless backend), but is more sensitive to noise when executed on a real noisy backend. In practice, by applying a noise scaling function before the execution of a circuit, one can indirectly scale up the effect of noise. The noise scaling function can either increase the total circuit execution time by inserting unitaries or increase the wait times in the middle of a circuit execution. These two methods are the aforementioned _unitary folding_ and _identity scaling_ respectively.
 
-#### The special case of odd integer scale factors
-
+**The special case of odd integer scale factors**
 For any noise scaling function, if `scale_factor` is equal to 1, the input circuit is unchanged and it is subject to the base noise of the backend.
-
 Both local and global folding, if applied uniformly to all the gates of `circuit`, produce a `scaled_circuit` that has 3 times more gates than the input `circuit`. This corresponds to the `scale_factor=3` setting.
 
-#### The general case of real scale factors
-
-More generally, the `scale_factor` can be set to any real number larger than or equal to one. In this case, Mitiq applies additional folding to a selection of gates (for local folding) or to a final fraction of the circuit (for global folding), such that the total number of gates is _approximately_ scaled by `scale_factor`. For example:
+**The general case of real scale factors**
+More generally, the `scale_factor` can be set to any real number larger than or equal to one. In this case, Mitiq applies additional folding to a selection of gates (for local folding) or to a final fraction of the circuit (for global folding), such that the total number of gates is _approximately_ scaled by `scale_factor`.
 
 ### Identity Scaling
 
@@ -80,19 +77,16 @@ Zero noise extrapolation is one of the simplest error mitigation techniques and,
 In some instances the results of the extrapolation can exhibit a large bias. ZNE may not be helpful in cases where a low degree polynomial curve obtained by fitting the noisy expectation values does not match the zero-noise limit. When using circuits of less trivial depth on real devices, the lowest error points may be too noisy for the extrapolation to show improvement over the unmitigated result.
 
 
-
 **Notes**: 
 -  _if `scale_factor` is not an odd integer and if the input circuit is very short, there can be a large error in the actual scaling of the number of gates. For this reason, when dealing with very short circuits, we suggest to use odd integer scale factors._
+- For identity scaling, two options are available: fixed identity insertion method (FIIM) and random identity insertion method (RIIM). The latter and newer method provides better results both in terms of number of gates and effective mitigation. Whilst in the FIIM after every gate 2n+1 CNOT (or generally unitaries) are added, in the RIIM n is promoted to a random variable $n_i$ that changes for every gate in the original circuit (more details in reference [[Zero Noise Extrapolation#^21ca86|1]]). 
 
 **Open Questions**:
  - [ ]  
 
-
-
 ### References
-- [Martin's paper]([2003.04941 (arxiv.org)](https://arxiv.org/pdf/2003.04941))
-- [1611.09301](https://arxiv.org/abs/1611.09301)
-- [1612.02058](https://arx[1805.04492](https://arxiv.org/abs/1805.04492)
-- [1805.04492](https://arxiv.org/abs/1805.04492)
-
-[What is the theory behind ZNE? — Mitiq 0.37.0 documentation](https://mitiq.readthedocs.io/en/latest/guide/zne-5-theory.html)
+- [2003.04941 (arxiv.org)](https://arxiv.org/pdf/2003.04941))  ^21ca86
+- [1611.09301](https://arxiv.org/abs/1611.09301) (yet to read)
+- [1612.02058](https://arxiv.org/abs/1805.04492) (yet to read)
+- [1805.04492](https://arxiv.org/abs/1805.04492) (yet to read)
+- [What is the theory behind ZNE?](https://mitiq.readthedocs.io/en/latest/guide/zne-5-theory.html)

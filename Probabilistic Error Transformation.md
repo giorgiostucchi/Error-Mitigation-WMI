@@ -1,8 +1,6 @@
 Probabilistic error cancellation (PEC) is an error mitigation technique in which ideal operations are represented as linear combinations of noisy operations. In PEC, unbiased estimates of expectation values are obtained by Monte Carlo averaging over different noisy circuits. 
 
-[What is the theory behind PEC? — Mitiq 0.37.0 documentation](https://mitiq.readthedocs.io/en/latest/guide/pec-5-theory.html)
-
-Probabilistic error cancellation (PEC) is a noise-aware error mitigation technique which is based on two main ideas:
+PEC is therefore based on two steps:
 
 - The first idea is to express ideal gates as linear combinations of implementable noisy gates. These linear combinations are called quasi-probability representations.
 - The second idea is to probabilistically sample from the previous quasi-probability representations to approximate quantum expectation values via a Monte Carlo average.
@@ -75,10 +73,7 @@ $$N \propto \frac{\gamma^2}{\delta^2}.$$
 
 The term $\delta^2$ in the denominator is due to the stochastic nature of quantum measurements and is present even when directly estimating an expectation value without error mitigation. The $\gamma^2$ factor instead represents the sampling overhead associated to PEC. For weak noise and short circuits, 𝛾 is typically small and PEC is applicable with a reasonable cost. On the contrary, if a circuit is too noisy or too deep, the value of 𝛾 can be so large that PEC becomes unfeasible.
 
-
-
-
-To apply PEC, you must know how to represent _ideal operations_ as linear combinations of _noisy implementable operations_. This information is exploited by Mitiq to remove the bias error from noisy expectation values.
+To apply PEC, you must know how to represent _ideal operations_ as linear combinations of _noisy implementable operations_. 
 
 - By _ideal operations_, we mean noiseless unitary gates applied to specific qubits.
 - By _noisy implementable operations_, we mean those noisy gates that can be applied to specific qubits by a real backend.
@@ -86,7 +81,7 @@ To apply PEC, you must know how to represent _ideal operations_ as linear comb
 Since real backends are not perfect, the noisy implementable operations do not have an ideal unitary effect and typically correspond to non-unitary quantum channels.
 
 
-how can we obtain the quasi-probability representations that are appropriate for a given backend? There are two main alternative scenarios.
+How can we obtain the quasi-probability representations that are appropriate for a given backend? There are two main alternative scenarios.
 
 - **Case 1:** The noise of the backend can be approximated by a simple noise model, such that quasi-probability representations can be analytically computed. For example, this is possible for depolarizing or amplitude damping noise.
 - **Case 2:** The noise of the backend is too complex and cannot be approximated by a simple noise model.
@@ -95,10 +90,6 @@ Depending on the previous two cases, the method to obtain quasi-probability repr
 
 - **Method for case 1:** A simple noise model (e.g. depolarizing or amplitude damping) is typically characterized by a single `noise_level` parameter (or a few parameters) that can be experimentally estimated. Possible techniques for estimating the noise level are randomized-benchmarking experiments or calibration experiments. Often, gate error probabilities are reported by hardware vendors and can be used to obtain a good guess for the `noise_level` without running any experiments. Given the noise model and the `noise_level`, one can apply known analytical expressions to compute the quasi-probability representations of arbitrary gates.
 - **Method for case 2:** Assuming an over-simplified noise model may be a bad approximation. In this case, the suggested approach is to perform the complete process tomography of a basis set of implementable noisy operations (e.g. the native gate set of the backend). One could also use _gate set tomography_ (GST), a noise characterization technique which is robust to state-preparation and measurement errors. Given the superoperators of the noisy implementable operations, one can obtain the quasi-probability representations as solutions of numerical optimization problems.
-
-
-
-
 
 ## Advantages
 
@@ -117,8 +108,8 @@ Another practical problem of PEC is that it involves the execution of many diffe
  - [ ]  
 
 
-
-### Paper References (to read):
-- [1612.02058](https://arxiv.org/abs/1612.02058)
-- [1712.09271](https://arxiv.org/abs/1712.09271)
-- [1905.10135](https://arxiv.org/abs/1905.10135)
+### References
+- [1612.02058](https://arxiv.org/abs/1612.02058) (yet to read)
+- [1712.09271](https://arxiv.org/abs/1712.09271) (yet to read)
+- [1905.10135](https://arxiv.org/abs/1905.10135) (yet to read)
+- [What is the theory behind PEC? ](https://mitiq.readthedocs.io/en/latest/guide/pec-5-theory.html)
