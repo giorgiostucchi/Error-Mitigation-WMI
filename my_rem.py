@@ -9,27 +9,45 @@ import scipy.optimize
 import numpy.typing as npt
 from typing import List
 
+# Define a function to create a noise model with a bit-flip error during measurement
 def get_readout_noise(p):
-    """Create a noise model with a bit-flip error during measurement."""
-    error_meas = pauli_error([('X', p), ('I', 1 - p)])
-    noise_model = NoiseModel()
-    noise_model.add_all_qubit_quantum_error(error_meas, "measure")
+    """Create a noise model with a bit-flip error during measurement.
+    
+    Args:
+        p: The probability of a bit-flip error during measurement.
+        
+    Returns:
+        The noise model with the specified error.
+    """
+    error_meas = pauli_error([('X', p), ('I', 1 - p)])  # Create a bit-flip error
+    noise_model = NoiseModel()  # Create an empty noise model
+    noise_model.add_all_qubit_quantum_error(error_meas, "measure")  # Add the error to all qubits during measurement
     return noise_model
 
+# Define a function to initialize the states and confusion matrix
 def initialize(n_qubits):
-    """Initialize the states and confusion matrix."""
-    total_states = 2**n_qubits
-    states = [format(i, f'0{n_qubits}b') for i in range(total_states)]
-    confusion_matrix = np.zeros((total_states, total_states))
+    """Initialize the states and confusion matrix.
+    
+    Args:
+        n_qubits: The number of qubits.
+        
+    Returns:
+        The list of states and the confusion matrix.
+    """
+    total_states = 2**n_qubits  # Calculate the total number of states
+    states = [format(i, f'0{n_qubits}b') for i in range(total_states)]  # Generate all possible states
+    confusion_matrix = np.zeros((total_states, total_states))  # Initialize the confusion matrix with zeros
     return states, confusion_matrix
 
 def generate_mitigator(n_qubits, shots, noise_model):
     """Generate the mitigator matrix based on the noise model."""
     states, confusion_matrix = initialize(n_qubits)
 
+    # Print the list of states
     print("States:")
     print(states)
 
+    # Iterate over each state and perform measurements
     for i, state in enumerate(states):
         qc = QuantumCircuit(n_qubits, n_qubits)
         for q in range(n_qubits):
@@ -37,6 +55,7 @@ def generate_mitigator(n_qubits, shots, noise_model):
                 qc.x(n_qubits - q - 1)  # Apply X gate to the appropriate qubit
         qc.measure(qc.qregs[0], qc.cregs[0])
 
+        # Simulate the circuit with the noise model
         simulator = AerSimulator(noise_model=noise_model)
         counts = simulator.run(qc, shots=shots).result().get_counts(qc)
         print(f"{state} becomes {counts}")
@@ -49,20 +68,24 @@ def generate_mitigator(n_qubits, shots, noise_model):
     # Normalize the confusion matrix
     confusion_matrix /= shots    
 
+    # Set the print options for the confusion matrix
     np.set_printoptions(formatter={'float': '{:0.6f}'.format})
 
+    # Print the confusion matrix
     print("\nConfusion Matrix:")
     print(confusion_matrix, "\n")
 
     # Calculate the mitigator
     mitigator = la.inv(confusion_matrix)
 
+    # Print the mitigator
     print("Mitigator:")
     print(mitigator)  
 
     return mitigator
 
 
+# Commented code
 def closest_positive_distribution(
     quasi_probabilities: npt.NDArray[np.float64],
 ) -> npt.NDArray[np.float64]:
@@ -76,27 +99,28 @@ def closest_positive_distribution(
     Returns:
         The closest probability distribution.
     """
-    quasi_probabilities = np.array(quasi_probabilities, dtype=np.float64)
-    init_guess = quasi_probabilities.clip(min=0)
-    init_guess /= np.sum(init_guess)
+    quasi_probabilities = np.array(quasi_probabilities, dtype=np.float64)  # Convert input to numpy array
+    init_guess = quasi_probabilities.clip(min=0)  # Clip negative values to 0
+    init_guess /= np.sum(init_guess)  # Normalize the initial guess
 
     def distance(probabilities: npt.NDArray[np.float64]) -> np.float64:
-        return np.linalg.norm(probabilities - quasi_probabilities)
+        """Calculate the distance between two probability distributions."""
+        return np.linalg.norm(probabilities - quasi_probabilities)  # Calculate the Euclidean distance
 
-    num_vars = len(init_guess)
-    bounds = scipy.optimize.Bounds(np.zeros(num_vars), np.ones(num_vars))
-    normalization = scipy.optimize.LinearConstraint(np.ones(num_vars).T, 1, 1)
+    num_vars = len(init_guess)  # Number of variables
+    bounds = scipy.optimize.Bounds(np.zeros(num_vars), np.ones(num_vars))  # Set the bounds for optimization
+    normalization = scipy.optimize.LinearConstraint(np.ones(num_vars).T, 1, 1)  # Set the constraint for normalization
     result = scipy.optimize.minimize(
         distance,
         init_guess,
         bounds=bounds,
         constraints=normalization,
-    )
+    )  # Perform the optimization
     if not result.success:
         raise ValueError(
             "REM failed to determine the closest positive distribution."
-        )
-    return result.x
+        )  # Raise an error if optimization fails
+    return result.x  # Return the closest positive distribution
 
 def sample_probability_vector(
     probability_vector: npt.NDArray[np.float64], samples: int
