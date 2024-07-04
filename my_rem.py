@@ -68,6 +68,13 @@ def generate_mitigator(n_qubits, shots, noise_model):
     # Normalize the confusion matrix
     confusion_matrix /= shots    
 
+    condition_number =  np.linalg.cond(confusion_matrix)
+    print("\nCondition_number:")
+    print(condition_number, "\n")
+    if condition_number > 10:
+        raise ArithmeticError('Condition number > 10, confusion matrix not invertible')
+    
+
     # Set the print options for the confusion matrix
     np.set_printoptions(formatter={'float': '{:0.6f}'.format})
 
