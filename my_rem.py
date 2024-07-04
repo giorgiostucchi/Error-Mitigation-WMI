@@ -72,7 +72,7 @@ def generate_mitigator(n_qubits, shots, noise_model):
     print("\nCondition_number:")
     print(condition_number, "\n")
     if condition_number > 10:
-        raise ArithmeticError('Condition number > 10, confusion matrix not invertible')
+        raise ArithmeticError('Condition number > 10, confusion matrix not well-conditioned')
     
 
     # Set the print options for the confusion matrix
