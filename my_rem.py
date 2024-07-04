@@ -2,7 +2,7 @@
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit_aer.noise import NoiseModel, pauli_error
+from qiskit_aer.noise import NoiseModel, pauli_error, QuantumError
 from qiskit_aer.backends import AerSimulator
 import scipy.linalg as la
 import scipy.optimize
@@ -10,7 +10,7 @@ import numpy.typing as npt
 from typing import List
 
 # Define a function to create a noise model with a bit-flip error during measurement
-def get_readout_noise(p):
+def get_readout_noise(error: QuantumError):
     """Create a noise model with a bit-flip error during measurement.
     
     Args:
@@ -19,9 +19,8 @@ def get_readout_noise(p):
     Returns:
         The noise model with the specified error.
     """
-    error_meas = pauli_error([('X', p), ('I', 1 - p)])  # Create a bit-flip error
     noise_model = NoiseModel()  # Create an empty noise model
-    noise_model.add_all_qubit_quantum_error(error_meas, "measure")  # Add the error to all qubits during measurement
+    noise_model.add_all_qubit_quantum_error(error, "measure")  # Add the error to all qubits during measurement
     return noise_model
 
 # Define a function to initialize the states and confusion matrix
@@ -39,13 +38,14 @@ def initialize(n_qubits):
     confusion_matrix = np.zeros((total_states, total_states))  # Initialize the confusion matrix with zeros
     return states, confusion_matrix
 
-def generate_mitigator(n_qubits, shots, noise_model):
+def generate_mitigator(n_qubits, shots, noise_model, verbose=False):
     """Generate the mitigator matrix based on the noise model."""
     states, confusion_matrix = initialize(n_qubits)
 
-    # Print the list of states
-    print("States:")
-    print(states)
+    # Print the list of states if verbose is True
+    if verbose:
+        print("States:")
+        print(states)
 
     # Iterate over each state and perform measurements
     for i, state in enumerate(states):
@@ -58,7 +58,10 @@ def generate_mitigator(n_qubits, shots, noise_model):
         # Simulate the circuit with the noise model
         simulator = AerSimulator(noise_model=noise_model)
         counts = simulator.run(qc, shots=shots).result().get_counts(qc)
-        print(f"{state} becomes {counts}")
+
+        # Print counts if verbose is True
+        if verbose:
+            print(f"{state} becomes {counts}")
 
         # Update the confusion matrix
         for measured_state, count in counts.items():
@@ -69,25 +72,25 @@ def generate_mitigator(n_qubits, shots, noise_model):
     confusion_matrix /= shots    
 
     condition_number =  np.linalg.cond(confusion_matrix)
-    print("\nCondition_number:")
-    print(condition_number, "\n")
+
+    # Print condition number if verbose is True
+    if verbose:
+        print("\nCondition number:")
+        print(condition_number, "\n")
+        print("\nConfusion Matrix:")
+        np.set_printoptions(formatter={'float': '{:0.6f}'.format})
+        print(confusion_matrix, "\n")
+        print("Mitigator:")
+    
     if condition_number > 10:
         raise ArithmeticError('Condition number > 10, confusion matrix not well-conditioned')
-    
-
-    # Set the print options for the confusion matrix
-    np.set_printoptions(formatter={'float': '{:0.6f}'.format})
-
-    # Print the confusion matrix
-    print("\nConfusion Matrix:")
-    print(confusion_matrix, "\n")
 
     # Calculate the mitigator
-    mitigator = la.inv(confusion_matrix)
+    mitigator = np.linalg.inv(confusion_matrix)
 
-    # Print the mitigator
-    print("Mitigator:")
-    print(mitigator)  
+    # Print mitigator if verbose is True
+    if verbose:
+        print(mitigator)
 
     return mitigator
 
