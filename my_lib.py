@@ -46,7 +46,11 @@ def get_combined_noise(error_meas: QuantumError = None,
 
 
 
-def apply_ddd_and_run(circuit, noise: NoiseModel = None, reps=1000, ddd=False, ddd_rule=None, output=False):
+from qiskit_ibm_runtime.fake_provider import FakeLimaV2 as FakeLima
+from qiskit_ibm_runtime.fake_provider import FakeQuitoV2 as FakeQuito
+
+
+def apply_ddd_and_run(circuit, noise: NoiseModel = None, reps=1000, ddd=False, ddd_rule=None, output=False, simulated_hardware=False):
     """
     Apply DDD rules and run the circuit with optional noise model.
 
@@ -57,6 +61,7 @@ def apply_ddd_and_run(circuit, noise: NoiseModel = None, reps=1000, ddd=False, d
     - ddd: Boolean flag to apply DDD rules.
     - ddd_rule: The rule to apply for DDD (only needed if ddd is True).
     - output: Boolean flag to control the print statements.
+    - simulated_hardware: Boolean flag to run on simulated hardware (FakeLima).
 
     Returns:
     - counts: The counts from running the circuit.
@@ -77,8 +82,13 @@ def apply_ddd_and_run(circuit, noise: NoiseModel = None, reps=1000, ddd=False, d
 
     if output:
         print(f"Running the circuit ... for {reps} repetitions \n")
-    simulator = AerSimulator(noise_model=noise)
-    result = simulator.run(new_circuit, shots=reps).result()
+
+    if simulated_hardware:
+        backend = FakeQuito()
+    else:
+        backend = AerSimulator(noise_model=noise)
+    
+    result = backend.run(new_circuit, shots=reps).result()
     counts = result.get_counts(new_circuit)
     
     return counts
@@ -126,7 +136,7 @@ def apply_mitigator(counts, n_qubits, reps=1000, mitigator_instance=None, output
     
     return probabilities
 
-def run_cases(circuit, noise: NoiseModel = None, reps = 1000, n_qubits = None, ddd_rule = None, mitigator_instance = None):
+def run_cases(circuit, noise: NoiseModel = None, reps=1000, n_qubits=None, ddd_rule=None, mitigator_instance=None, simulated_hardware=False):
     """
     Runs the circuit for five cases and returns the results.
 
@@ -137,6 +147,7 @@ def run_cases(circuit, noise: NoiseModel = None, reps = 1000, n_qubits = None, d
     - n_qubits: Number of qubits for the mitigator.
     - ddd_rule: The rule to apply for DDD.
     - mitigator_instance: Precomputed mitigator instance.
+    - simulated_hardware: Boolean flag to run on simulated hardware (FakeLima).
 
     Returns:
     - Results for each case.
@@ -144,30 +155,41 @@ def run_cases(circuit, noise: NoiseModel = None, reps = 1000, n_qubits = None, d
     
     # Case 1: No noise, no mitigation
     print("Running with no noise, no mitigation ... \n")
-    counts_no_noise_no_mit = apply_ddd_and_run(circuit, noise=None, reps=reps, ddd=False, ddd_rule=None, output=False)
+    counts_no_noise_no_mit = apply_ddd_and_run(
+        circuit, noise=None, reps=reps, ddd=False, ddd_rule=None, output=False, simulated_hardware=False
+    )
     result_no_noise_no_mit = apply_mitigator(counts_no_noise_no_mit, n_qubits, reps, mitigator_instance=None, output=True)
     
     # Case 2: Noise, no mitigation
     print("Running with noise, no mitigation ... \n")
-    counts_noise_no_mit = apply_ddd_and_run(circuit, noise=noise, reps=reps, ddd=False, ddd_rule=None, output=False)
+    counts_noise_no_mit = apply_ddd_and_run(
+        circuit, noise=noise, reps=reps, ddd=False, ddd_rule=None, output=False, simulated_hardware=simulated_hardware
+    )
     result_noise_no_mit = apply_mitigator(counts_noise_no_mit, n_qubits, reps, mitigator_instance=None, output=False)
     
     # Case 3: Noise, mitigation True, DDD False
     print("Running with noise, mitigation True, DDD False ... \n")
-    counts_noise_rem_no_ddd = apply_ddd_and_run(circuit, noise=noise, reps=reps, ddd=False, ddd_rule=None, output=False)
+    counts_noise_rem_no_ddd = apply_ddd_and_run(
+        circuit, noise=noise, reps=reps, ddd=False, ddd_rule=None, output=False, simulated_hardware=simulated_hardware
+    )
     result_noise_rem_no_ddd = apply_mitigator(counts_noise_rem_no_ddd, n_qubits, reps, mitigator_instance=mitigator_instance, output=False)
     
     # Case 4: Noise, mitigation False, DDD True
     print("Running with noise, mitigation False, DDD True ... \n")
-    counts_noise_no_rem_ddd = apply_ddd_and_run(circuit, noise=noise, reps=reps, ddd=True, ddd_rule=ddd_rule, output=False)
+    counts_noise_no_rem_ddd = apply_ddd_and_run(
+        circuit, noise=noise, reps=reps, ddd=True, ddd_rule=ddd_rule, output=True, simulated_hardware=simulated_hardware
+    )
     result_noise_no_rem_ddd = apply_mitigator(counts_noise_no_rem_ddd, n_qubits, reps, mitigator_instance=None, output=False)
     
     # Case 5: Noise, mitigation True, DDD True
     print("Running with noise, mitigation True, DDD True ... \n")
-    counts_noise_rem_ddd = apply_ddd_and_run(circuit, noise=noise, reps=reps, ddd=True, ddd_rule=ddd_rule, output=False)
+    counts_noise_rem_ddd = apply_ddd_and_run(
+        circuit, noise=noise, reps=reps, ddd=True, ddd_rule=ddd_rule, output=False, simulated_hardware=simulated_hardware
+    )
     result_noise_rem_ddd = apply_mitigator(counts_noise_rem_ddd, n_qubits, reps, mitigator_instance=mitigator_instance, output=False)
     
     return result_no_noise_no_mit, result_noise_no_mit, result_noise_rem_no_ddd, result_noise_no_rem_ddd, result_noise_rem_ddd
+
 
 def distance(prob_dist_1: Dict[str, float], prob_dist_2: Dict[str, float]) -> np.float64:
     """Calculate the distance between two probability distributions given as dictionaries."""
